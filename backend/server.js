@@ -18,15 +18,27 @@ const path = require('path');
 const app = express();
 
 // --- Middleware ---
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'https://bms-clone-drab.vercel.app'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-}));
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'https://bms-clone-drab.vercel.app'
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log('❌ CORS blocked request from:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // --- Directory Setup ---
@@ -62,7 +74,7 @@ const seedMovies = [
     duration: 180,
     language: 'English',
     genres: ['Drama', 'History'],
-    showtimes: [{ id: 101, time: '2025-11-01T18:30:00', screen: 'Screen 1', price: 300 }]
+    showtimes: [{ id: 101, time: '2025-11-01T18:30:00', screen: 'Screen 1', price: 300 }],
   },
   {
     id: 'dune-part-two',
@@ -73,7 +85,7 @@ const seedMovies = [
     duration: 155,
     language: 'English',
     genres: ['Action', 'Sci-Fi'],
-    showtimes: [{ id: 201, time: '2025-11-02T20:00:00', screen: 'Screen 2', price: 350 }]
+    showtimes: [{ id: 201, time: '2025-11-02T20:00:00', screen: 'Screen 2', price: 350 }],
   },
   {
     id: 'interstellar',
@@ -84,7 +96,7 @@ const seedMovies = [
     duration: 169,
     language: 'English',
     genres: ['Adventure', 'Sci-Fi'],
-    showtimes: [{ id: 301, time: '2025-11-03T19:00:00', screen: 'Screen 3', price: 280 }]
+    showtimes: [{ id: 301, time: '2025-11-03T19:00:00', screen: 'Screen 3', price: 280 }],
   },
   {
     id: 'they-call-him-og',
@@ -95,8 +107,8 @@ const seedMovies = [
     duration: 122,
     language: 'English',
     genres: ['Crime', 'Drama'],
-    showtimes: [{ id: 401, time: '2025-11-04T21:00:00', screen: 'Screen 4', price: 260 }]
-  }
+    showtimes: [{ id: 401, time: '2025-11-04T21:00:00', screen: 'Screen 4', price: 260 }],
+  },
 ];
 
 // Always overwrite movie file (preserve bookings)
@@ -107,13 +119,13 @@ if (!fs.existsSync(BOOKINGS_FILE)) writeJson(BOOKINGS_FILE, []);
 
 // --- API Routes ---
 
-// Health Check
+// Health Check (used by Railway & Render)
 app.get('/api', (req, res) => {
   res.json({
     status: 'ok',
     message: 'BookMyShow MIND backend running successfully.',
-    version: '1.0.2',
-    endpoints: ['/api/movies', '/api/bookings', '/api/ai/bookMovie', '/api/search']
+    version: '1.0.3',
+    endpoints: ['/api/movies', '/api/bookings', '/api/ai/bookMovie', '/api/search'],
   });
 });
 
@@ -125,7 +137,7 @@ app.get('/api/movies', (req, res) => {
 // Get single movie by ID
 app.get('/api/movies/:id', (req, res) => {
   const movies = readJson(MOVIES_FILE, []);
-  const movie = movies.find(m => m.id === req.params.id);
+  const movie = movies.find((m) => m.id === req.params.id);
   if (!movie) return res.status(404).json({ error: 'Movie not found' });
   res.json(movie);
 });
@@ -148,7 +160,7 @@ app.post('/api/bookings', (req, res) => {
     seats: seats || [],
     price: price || 0,
     customerEmail: customerEmail || 'demo@example.com',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
   bookings.unshift(booking);
   writeJson(BOOKINGS_FILE, bookings);
@@ -162,8 +174,8 @@ app.post('/api/ai/bookMovie', (req, res) => {
 
   const movies = readJson(MOVIES_FILE, []);
   let movie =
-    movies.find(m => m.id.toLowerCase() === movieName.toLowerCase()) ||
-    movies.find(m => m.title.toLowerCase() === movieName.toLowerCase());
+    movies.find((m) => m.id.toLowerCase() === movieName.toLowerCase()) ||
+    movies.find((m) => m.title.toLowerCase() === movieName.toLowerCase());
 
   if (!movie) {
     movie = {
@@ -175,7 +187,7 @@ app.post('/api/ai/bookMovie', (req, res) => {
       duration: 120,
       language: 'English',
       genres: ['Drama'],
-      showtimes: [{ id: Date.now(), time: new Date().toISOString(), screen: 'Auto', price: 250 }]
+      showtimes: [{ id: Date.now(), time: new Date().toISOString(), screen: 'Auto', price: 250 }],
     };
     const moviesList = readJson(MOVIES_FILE, []);
     moviesList.unshift(movie);
@@ -190,7 +202,7 @@ app.post('/api/ai/bookMovie', (req, res) => {
     seats: seats || ['A1', 'A2'],
     price,
     customerEmail: customerEmail || 'demo@mind.ai',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
   const bookings = readJson(BOOKINGS_FILE, []);
@@ -200,7 +212,7 @@ app.post('/api/ai/bookMovie', (req, res) => {
   res.json({
     success: true,
     message: `Booked ${booking.seats.length} tickets for "${booking.movieTitle}"`,
-    booking
+    booking,
   });
 });
 
@@ -209,14 +221,12 @@ app.get('/api/search', (req, res) => {
   const q = (req.query.q || '').toLowerCase();
   const movies = readJson(MOVIES_FILE, []);
   const result = movies.filter(
-    m =>
-      m.title.toLowerCase().includes(q) ||
-      m.genres.join(' ').toLowerCase().includes(q)
+    (m) => m.title.toLowerCase().includes(q) || m.genres.join(' ').toLowerCase().includes(q)
   );
   res.json(result);
 });
 
-// --- Serve Frontend (for Render/Railway deployment) ---
+// --- Serve Frontend (Render/Railway Deployment) ---
 if (fs.existsSync(PUBLIC_DIR)) {
   app.use(express.static(PUBLIC_DIR));
   app.get('*', (req, res) => {
@@ -225,5 +235,5 @@ if (fs.existsSync(PUBLIC_DIR)) {
 }
 
 // --- Start Server ---
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`✅ Backend running on port ${PORT}`));
