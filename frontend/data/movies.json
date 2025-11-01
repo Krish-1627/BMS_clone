@@ -1,0 +1,86 @@
+[
+  {
+    "id": "oppenheimer",
+    "title": "Oppenheimer",
+    "overview": "A biographical thriller about the life of J. Robert Oppenheimer.",
+    "poster": "/assets/posters/oppenheimer.jpg",
+    "backdrop": "/assets/posters/oppenheimer_back.jpg",
+    "duration": 180,
+    "language": "English",
+    "genres": [
+      "Drama",
+      "History"
+    ],
+    "showtimes": [
+      {
+        "id": 101,
+        "time": "2025-11-01T18:30:00",
+        "screen": "Screen 1",
+        "price": 300
+      }
+    ]
+  },
+  {
+    "id": "dune-part-two",
+    "title": "Dune: Part Two",
+    "overview": "The epic continuation of Dune's story.",
+    "poster": "/assets/posters/dune.jpg",
+    "backdrop": "/assets/posters/dune_back.jpg",
+    "duration": 155,
+    "language": "English",
+    "genres": [
+      "Action",
+      "Sci-Fi"
+    ],
+    "showtimes": [
+      {
+        "id": 201,
+        "time": "2025-11-02T20:00:00",
+        "screen": "Screen 2",
+        "price": 350
+      }
+    ]
+  },
+  {
+    "id": "interstellar",
+    "title": "Interstellar",
+    "overview": "A team travels through a wormhole in search of a new home for humanity.",
+    "poster": "/assets/posters/interstellar.jpg",
+    "backdrop": "/assets/posters/interstellar_back.jpg",
+    "duration": 169,
+    "language": "English",
+    "genres": [
+      "Adventure",
+      "Sci-Fi"
+    ],
+    "showtimes": [
+      {
+        "id": 301,
+        "time": "2025-11-03T19:00:00",
+        "screen": "Screen 3",
+        "price": 280
+      }
+    ]
+  },
+  {
+    "id": "they-call-him-og",
+    "title": "They Call Him OG",
+    "overview": "The continuing story of OG.",
+    "poster": "/assets/posters/Og.jpg",
+    "backdrop": "/assets/posters/Og_back.jpg",
+    "duration": 122,
+    "language": "English",
+    "genres": [
+      "Crime",
+      "Drama"
+    ],
+    "showtimes": [
+      {
+        "id": 401,
+        "time": "2025-11-04T21:00:00",
+        "screen": "Screen 4",
+        "price": 260
+      }
+    ]
+  }
+]

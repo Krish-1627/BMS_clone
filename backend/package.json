@@ -1,0 +1,21 @@
+{
+  "name": "bookmyshow-mind-backend",
+  "version": "1.0.0",
+  "description": "Mock BookMyShow backend for MIND AI automation",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bookmyshow-mind": "file:..",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

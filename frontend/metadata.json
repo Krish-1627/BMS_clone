@@ -1,0 +1,5 @@
+{
+  "name": "BookMyShow Clone for MIND Demo",
+  "description": "A standalone, offline-capable BookMyShow clone for the MIND automation demo. It uses local JSON data, persists bookings to localStorage, and includes hooks for automation testing.",
+  "requestFramePermissions": []
+}
