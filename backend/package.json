@@ -1,22 +1,22 @@
 {
   "name": "bookmyshow-mind-backend",
   "version": "1.0.0",
-  "description": "Mock BookMyShow backend for MIND AI automation",
+  "description": "BookMyShow backend for MIND AI automation (Railway + Vercel ready)",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "bookmyshow-mind": "file:..",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^4.21.2",
-    "fs": "0.0.1-security",
-    "path": "^0.12.7"
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }

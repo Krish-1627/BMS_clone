@@ -21,8 +21,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
-  'https://bms-clone-drab.vercel.app',         // Vercel frontend
-  'https://bmsclone-production.up.railway.app' // Railway backend
+  'https://bms-clone-drab.vercel.app', // Vercel frontend
 ];
 
 app.use(
@@ -61,7 +60,11 @@ function readJson(file, def = []) {
 }
 
 function writeJson(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+  try {
+    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('❌ Error writing JSON file:', err);
+  }
 }
 
 // -------------------- Seed Demo Movies --------------------
@@ -112,7 +115,7 @@ const seedMovies = [
   },
 ];
 
-// Always refresh movie data
+// Always refresh movie data on startup
 writeJson(MOVIES_FILE, seedMovies);
 if (!fs.existsSync(BOOKINGS_FILE)) writeJson(BOOKINGS_FILE, []);
 
@@ -123,7 +126,7 @@ app.get('/api', (req, res) => {
   res.json({
     status: 'ok',
     message: '✅ BookMyShow backend active on Railway',
-    version: '1.0.5',
+    version: '1.0.6',
     endpoints: ['/api/movies', '/api/bookings', '/api/ai/bookMovie', '/api/search'],
   });
 });
@@ -131,12 +134,13 @@ app.get('/api', (req, res) => {
 // Get all movies
 app.get('/api/movies', (req, res) => {
   console.log('📡 /api/movies accessed');
-  res.json(readJson(MOVIES_FILE, []));
+  const movies = readJson(MOVIES_FILE, seedMovies);
+  res.json(movies);
 });
 
 // Get single movie
 app.get('/api/movies/:id', (req, res) => {
-  const movies = readJson(MOVIES_FILE, []);
+  const movies = readJson(MOVIES_FILE, seedMovies);
   const movie = movies.find((m) => m.id === req.params.id);
   if (!movie) return res.status(404).json({ error: 'Movie not found' });
   res.json(movie);
@@ -150,7 +154,8 @@ app.get('/api/bookings', (req, res) => {
 // Manual booking
 app.post('/api/bookings', (req, res) => {
   const { movieId, movieTitle, seats, price, customerEmail } = req.body;
-  if (!movieId || !movieTitle) return res.status(400).json({ error: 'Missing required fields' });
+  if (!movieId || !movieTitle)
+    return res.status(400).json({ error: 'Missing required fields' });
 
   const bookings = readJson(BOOKINGS_FILE, []);
   const booking = {
@@ -172,7 +177,7 @@ app.post('/api/ai/bookMovie', (req, res) => {
   const { movieName, seats, customerEmail } = req.body || {};
   if (!movieName) return res.status(400).json({ error: 'movieName required' });
 
-  const movies = readJson(MOVIES_FILE, []);
+  const movies = readJson(MOVIES_FILE, seedMovies);
   let movie =
     movies.find((m) => m.id.toLowerCase() === movieName.toLowerCase()) ||
     movies.find((m) => m.title.toLowerCase() === movieName.toLowerCase());
@@ -187,7 +192,9 @@ app.post('/api/ai/bookMovie', (req, res) => {
       duration: 120,
       language: 'English',
       genres: ['Drama'],
-      showtimes: [{ id: Date.now(), time: new Date().toISOString(), screen: 'Auto', price: 250 }],
+      showtimes: [
+        { id: Date.now(), time: new Date().toISOString(), screen: 'Auto', price: 250 },
+      ],
     };
     const moviesList = readJson(MOVIES_FILE, []);
     moviesList.unshift(movie);
@@ -219,9 +226,11 @@ app.post('/api/ai/bookMovie', (req, res) => {
 // Search
 app.get('/api/search', (req, res) => {
   const q = (req.query.q || '').toLowerCase();
-  const movies = readJson(MOVIES_FILE, []);
+  const movies = readJson(MOVIES_FILE, seedMovies);
   const result = movies.filter(
-    (m) => m.title.toLowerCase().includes(q) || m.genres.join(' ').toLowerCase().includes(q)
+    (m) =>
+      m.title.toLowerCase().includes(q) ||
+      m.genres.join(' ').toLowerCase().includes(q)
   );
   res.json(result);
 });
