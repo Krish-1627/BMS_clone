@@ -21,7 +21,8 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
-  'https://bms-clone-drab.vercel.app'
+  'https://bms-clone-drab.vercel.app',
+  'https://bmsclone-production.up.railway.app' // ✅ Added Railway domain
 ];
 
 app.use(
@@ -99,7 +100,7 @@ const seedMovies = [
     showtimes: [{ id: 301, time: '2025-11-03T19:00:00', screen: 'Screen 3', price: 280 }],
   },
   {
-    id: 'they-call-him-og',
+    id: 'They-call-him-og',
     title: 'They Call Him OG',
     overview: 'The continuing story of OG.',
     poster: '/assets/posters/Og.jpg',
@@ -124,7 +125,7 @@ app.get('/api', (req, res) => {
   res.json({
     status: 'ok',
     message: 'BookMyShow MIND backend running successfully.',
-    version: '1.0.3',
+    version: '1.0.4',
     endpoints: ['/api/movies', '/api/bookings', '/api/ai/bookMovie', '/api/search'],
   });
 });
