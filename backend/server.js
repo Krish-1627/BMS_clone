@@ -1,13 +1,13 @@
 /**
- * BookMyShow Clone — Render-Ready Backend for MIND Integration
- * ------------------------------------------------------------
+ * BookMyShow Clone — Render & Railway Ready Backend for MIND Integration
+ * ----------------------------------------------------------------------
  * Supports:
  * - Movie list retrieval
  * - Manual & AI-driven bookings
  * - Search endpoint
  * - Auto movie creation for AI requests
  * - JSON file persistence (backend/data/)
- * - Static assets for Render deployment
+ * - Static assets for deployment
  */
 
 const express = require('express');
@@ -18,7 +18,15 @@ const path = require('path');
 const app = express();
 
 // --- Middleware ---
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://bms-clone-drab.vercel.app'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));
 app.use(express.json());
 
 // --- Directory Setup ---
@@ -43,7 +51,7 @@ function writeJson(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
-// --- Seed Movies (Reset Mode for Demo) ---
+// --- Seed Movies (Demo Reset Mode) ---
 const seedMovies = [
   {
     id: 'oppenheimer',
@@ -99,12 +107,12 @@ if (!fs.existsSync(BOOKINGS_FILE)) writeJson(BOOKINGS_FILE, []);
 
 // --- API Routes ---
 
-// Health Check (important for Render)
+// Health Check
 app.get('/api', (req, res) => {
   res.json({
     status: 'ok',
     message: 'BookMyShow MIND backend running successfully.',
-    version: '1.0.1',
+    version: '1.0.2',
     endpoints: ['/api/movies', '/api/bookings', '/api/ai/bookMovie', '/api/search']
   });
 });
@@ -147,7 +155,7 @@ app.post('/api/bookings', (req, res) => {
   res.json({ success: true, booking });
 });
 
-// --- AI Booking Trigger (for MIND workflow) ---
+// --- AI Booking Trigger ---
 app.post('/api/ai/bookMovie', (req, res) => {
   const { movieName, seats, customerEmail } = req.body || {};
   if (!movieName) return res.status(400).json({ error: 'movieName required' });
@@ -157,7 +165,6 @@ app.post('/api/ai/bookMovie', (req, res) => {
     movies.find(m => m.id.toLowerCase() === movieName.toLowerCase()) ||
     movies.find(m => m.title.toLowerCase() === movieName.toLowerCase());
 
-  // Auto-create demo movie if not present
   if (!movie) {
     movie = {
       id: movieName.toLowerCase().replace(/\s+/g, '-'),
@@ -209,7 +216,7 @@ app.get('/api/search', (req, res) => {
   res.json(result);
 });
 
-// --- Serve Frontend (Render Deployment) ---
+// --- Serve Frontend (for Render/Railway deployment) ---
 if (fs.existsSync(PUBLIC_DIR)) {
   app.use(express.static(PUBLIC_DIR));
   app.get('*', (req, res) => {
