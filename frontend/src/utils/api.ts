@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+const isLocal = window.location.hostname === 'localhost';
+
+// Automatically choose between local dev server and deployed backend
 const api = axios.create({
-  baseURL: 'https://bookmyshow-backend-production.up.railway.app/api', // <-- Replace with your real Railway URL
+  baseURL: isLocal
+    ? 'http://localhost:8080/api'
+    : 'https://bmsclone-production.up.railway.app/api', // <-- your Railway backend URL
   timeout: 10000,
 });
 
