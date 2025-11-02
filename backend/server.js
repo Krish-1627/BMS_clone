@@ -25,7 +25,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
-  'https://bms-clone-drab.vercel.app', // Vercel frontend
+  'https://bookmyshow-mind.vercel.app', // your real Vercel domain
 ];
 
 app.use(
